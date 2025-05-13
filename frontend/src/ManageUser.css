@@ -1,0 +1,112 @@
+/* General Styles */
+.container {
+    max-width: 100%;
+    margin: auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    background: var(--background-color, white); /* Theme support */
+}
+
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    margin-right: 50%;
+}
+
+/* Back Button */
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Buttons */
+.button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.button-default {
+    background-color: gray;
+    color: white;
+}
+
+.button-primary {
+    background-color: blue;
+    color: white;
+}
+
+.button-destructive {
+    background-color: red;
+    color: white;
+}
+
+.button:hover {
+    opacity: 0.8;
+}
+
+/* User List */
+.user-list {
+    list-style: none;
+    padding: 0;
+}
+
+.user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--item-background, #f3f3f3); /* Theme support */
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+}
+
+/* Actions */
+.user-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Inputs */
+.input-field,
+.role-select {
+    padding: 8px;
+    border: 1px solid var(--border-color, #ccc); /* Theme support */
+    border-radius: 5px;
+    background: var(--input-background, white); /* Theme support */
+    color: var(--text-color, black); /* Theme support */
+}
+
+/* Error Message */
+.error-message {
+    color: var(--error-color, red); /* Theme support */
+    margin-top: 10px;
+}
+
+/* Theme Support */
+[data-theme="dark"] {
+    --background-color: #333;
+    --item-background: #444;
+    --border-color: #555;
+    --input-background: #222;
+    --text-color: white;
+    --error-color: #ff5555;
+}
+
+[data-theme="brown"] {
+    --background-color: #4a3728;
+    --item-background: #5a4636;
+    --border-color: #6a5646;
+    --input-background: #3a2718;
+    --text-color: #f0e6d6;
+    --error-color: #ff7777;
+}

@@ -1,0 +1,138 @@
+.home-container {
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--primary-bg);
+  color: var(--primary-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header-left h1 {
+  margin: 0;
+  font-size: 28px;
+  color: var(--primary-text);
+}
+
+.header-left p {
+  margin: 5px 0 0;
+  font-size: 14px;
+  color: var(--primary-text);
+  font-weight: 500; /* Improve readability */
+}
+
+.header-right img {
+  height: 40px;
+  margin-left: 10px;
+}
+
+.home-header {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  width: 50px;
+  height: 50px;
+  margin-right: 15px;
+}
+
+.home-details p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: var(--primary-text);
+  font-weight: 500; /* Improve readability */
+}
+
+.status-indicator {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.status-armed {
+  background-color: var(--status-armed);
+  color: white;
+}
+
+.status-disarmed {
+  background-color: var(--status-disarmed);
+  color: white;
+}
+
+.status-stay {
+  background-color: var(--status-stay);
+  color: #2c3e50;
+}
+
+.status-away {
+  background-color: var(--status-away);
+  color: white;
+}
+
+.home-actions {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.toggle-btn, .mode-btn, .view-btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-btn {
+  background-color: var(--status-away);
+  color: white;
+}
+
+.toggle-btn:hover {
+  background-color: #2980b9;
+}
+
+.mode-btn {
+  background-color: #f0f0f0;
+  color: var(--primary-text);
+}
+
+.mode-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.view-btn {
+  background-color: var(--status-disarmed);
+  color: white;
+}
+
+.view-btn:hover {
+  background-color: #27ae60;
+}
+
+.notification-banner {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: var(--status-away);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.notification-text {
+  margin: 5px 0;
+  color: white;
+}

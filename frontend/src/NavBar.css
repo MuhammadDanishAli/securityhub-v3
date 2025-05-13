@@ -1,0 +1,178 @@
+/* Variables */
+:root {
+    --border-radius: 10px;
+    --spacer: 1rem;
+    --primary: #406ff3;
+    --text: #6a778e;
+    --link-height: calc(var(--spacer) * 3.5);
+    --timing: 250ms;
+    --transition: var(--timing) ease all;
+  }
+  
+  /* Keyframes for gooey effect */
+  @keyframes gooeyEffect-1 {
+    0% { transform: scale(1, 1); }
+    50% { transform: scale(0.5, 1.5); }
+    100% { transform: scale(1, 1); }
+  }
+  
+  @keyframes gooeyEffect-2 {
+    0% { transform: scale(1, 1); }
+    50% { transform: scale(0.5, 1.5); }
+    100% { transform: scale(1, 1); }
+  }
+  
+  @keyframes gooeyEffect-3 {
+    0% { transform: scale(1, 1); }
+    50% { transform: scale(0.5, 1.5); }
+    100% { transform: scale(1, 1); }
+  }
+  
+  @keyframes gooeyEffect-4 {
+    0% { transform: scale(1, 1); }
+    50% { transform: scale(0.5, 1.5); }
+    100% { transform: scale(1, 1); }
+  }
+  
+  @keyframes gooeyEffect-5 {
+    0% { transform: scale(1, 1); }
+    50% { transform: scale(0.5, 1.5); }
+    100% { transform: scale(1, 1); }
+  }
+  
+  @keyframes gooeyEffect-6 {
+    0% { transform: scale(1, 1); }
+    50% { transform: scale(0.5, 1.5); }
+    100% { transform: scale(1, 1); }
+  }
+  
+  .navbar {
+    position: fixed;
+    top: var(--spacer);
+    left: var(--spacer);
+    background: var(--navbar-bg);
+    border-radius: var(--border-radius);
+    padding: var(--spacer) 0;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.03);
+    height: calc(100vh - var(--spacer) * 4);
+    z-index: 1000;
+  }
+  
+  .navbar__menu {
+    position: relative;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .navbar__item {
+    position: relative;
+  }
+  
+  .navbar__item:last-child:before {
+    content: '';
+    position: absolute;
+    opacity: 0;
+    z-index: -1;
+    top: 0;
+    left: var(--spacer);
+    width: var(--link-height);
+    height: var(--link-height);
+    background: var(--primary);
+    border-radius: calc(var(--border-radius) * 1.75);
+    transition: var(--transition);
+  }
+  
+  /* Hover effects for items */
+  .navbar__item:nth-child(1):hover ~ .navbar__item:last-child:before,
+  .navbar__item:last-child:hover:before {
+    opacity: 1;
+    top: 0;
+    animation: gooeyEffect-1 var(--timing) 1;
+  }
+  
+  .navbar__item:nth-child(2):hover ~ .navbar__item:last-child:before {
+    opacity: 1;
+    top: calc(100% / 6 * 1);
+    animation: gooeyEffect-2 var(--timing) 1;
+  }
+  
+  .navbar__item:nth-child(3):hover ~ .navbar__item:last-child:before {
+    opacity: 1;
+    top: calc(100% / 6 * 2);
+    animation: gooeyEffect-3 var(--timing) 1;
+  }
+  
+  .navbar__item:nth-child(4):hover ~ .navbar__item:last-child:before {
+    opacity: 1;
+    top: calc(100% / 6 * 3);
+    animation: gooeyEffect-4 var(--timing) 1;
+  }
+  
+  .navbar__item:nth-child(5):hover ~ .navbar__item:last-child:before {
+    opacity: 1;
+    top: calc(100% / 6 * 4);
+    animation: gooeyEffect-5 var(--timing) 1;
+  }
+  
+  .navbar__item:nth-child(6):hover ~ .navbar__item:last-child:before {
+    opacity: 1;
+    top: calc(100% / 6 * 5);
+    animation: gooeyEffect-6 var(--timing) 1;
+  }
+  
+  .navbar__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--link-height);
+    width: calc(var(--spacer) * 5.5);
+    color: var(--text);
+    transition: var(--transition);
+    text-decoration: none;
+  }
+  
+  .navbar__link:hover {
+    color: #fff;
+  }
+  
+  .navbar__link span {
+    position: absolute;
+    left: 100%;
+    transform: translate(calc(var(--spacer) * -3));
+    margin-left: 1rem;
+    opacity: 0;
+    pointer-events: none;
+    color: var(--primary);
+    background: var(--navbar-bg);
+    padding: calc(var(--spacer) * 0.75);
+    transition: var(--transition);
+    border-radius: calc(var(--border-radius) * 1.75);
+  }
+  
+  .navbar__link:hover span {
+    opacity: 1;
+    transform: translate(0);
+  }
+  
+  .navbar:not(:hover) .navbar__link:focus span,
+  .navbar__link:hover span {
+    opacity: 1;
+    transform: translate(0);
+  }
+  
+  .logout-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--link-height);
+    width: calc(var(--spacer) * 5.5);
+    color: var(--text);
+  }

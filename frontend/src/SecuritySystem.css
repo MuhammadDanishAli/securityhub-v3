@@ -1,0 +1,118 @@
+.security-system-container {
+  padding: 20px;
+  background-color: var(--primary-bg);
+  color: var(--primary-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.mode-section, .sensors-section, .notifications-section {
+  margin-bottom: 20px;
+}
+
+.mode-section h2, .sensors-section h2, .notifications-section h2 {
+  color: var(--primary-text);
+  font-size: 1.5em; /* Increase heading size for clarity */
+}
+
+.mode-buttons {
+  margin: 10px 0;
+}
+
+.mode-buttons button {
+  padding: 8px 15px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: var(--status-away);
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.mode-buttons button:hover {
+  background-color: #2980b9;
+}
+
+.mode-buttons .active {
+  background-color: #27ae60;
+}
+
+.sensor-item {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 15px;
+  margin-bottom: 15px;
+  color: var(--primary-text); /* Ensure text inherits theme color */
+}
+
+.sensor-info p {
+  margin: 5px 0;
+  color: var(--primary-text); /* Ensure text inherits theme color */
+  font-size: 1em; /* Consistent size */
+}
+
+.toggle-btn {
+  padding: 5px 10px;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.toggle-btn.disabled {
+  background-color: #e74c3c;
+}
+
+.toggle-btn:hover {
+  opacity: 0.9;
+}
+
+.logs-list {
+  list-style: none;
+  padding: 0;
+}
+
+.log-item {
+  background-color: var(--card-bg);
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  color: var(--primary-text);
+}
+
+.dismiss-btn {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.no-notifications {
+  color: var(--primary-text);
+}
+
+.api-error {
+  color: #e74c3c;
+  margin-bottom: 10px;
+}
+
+/* Chart-specific styles for readability */
+canvas {
+  background-color: var(--card-bg); /* Match card background */
+}
+
+[data-theme="dark"] canvas {
+  color: #ffffff; /* White text for dark theme */
+}
+
+[data-theme="brown"] canvas {
+  color: #F5F5DC; /* Beige text for brown theme */
+}
+
+[data-theme="light"] canvas {
+  color: #2c3e50; /* Dark text for light theme */
+}
