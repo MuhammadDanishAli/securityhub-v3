@@ -12,13 +12,23 @@ import Sdata from './Sdata';
 import SecuritySystem from './SecuritySystem';
 
 // Home Wrapper Component to use useParams
-const HomeWrapper = ({ userRole }) => {
+const HomeWrapper = ({ userRole, token, apiUrl }) => {
   const { clientId } = useParams();
-  return <Home clientId={clientId} userRole={userRole} />;
+  return <Home clientId={clientId} userRole={userRole} token={token} apiUrl={apiUrl} />;
+};
+
+const SecuritySystemWrapper = ({ token, apiUrl }) => {
+  const { clientId } = useParams();
+  return <SecuritySystem clientId={clientId} token={token} apiUrl={apiUrl} />;
+};
+
+const SdataWrapper = ({ token, apiUrl }) => {
+  const { clientId } = useParams();
+  return <Sdata clientId={clientId} token={token} apiUrl={apiUrl} />;
 };
 
 // Constants
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+const API_URL = process.env.REACT_APP_API_URL || "https://Danish1122.pythonanywhere.com/api/";
 
 // PrivateRoute Component
 const PrivateRoute = ({ children, isLoggedIn, userRole, requiredRole }) => {
@@ -40,6 +50,7 @@ function App() {
     isLoggedIn: false,
     userRole: null,
     userName: '',
+    token: '',
   });
   const [theme, setTheme] = useState('light');
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -50,7 +61,8 @@ function App() {
     const storedRole = localStorage.getItem('userRole');
 
     if (storedToken && storedUsername && storedRole) {
-      fetch(`${API_URL}/api/sensor-status/`, {
+      fetch(`${API_URL}sensor-status/`, {
+        method: 'POST', // Adjust based on what your endpoint expects
         headers: {
           "Authorization": `Token ${storedToken}`,
           "Content-Type": "application/json",
@@ -58,7 +70,7 @@ function App() {
       })
         .then(response => {
           if (response.ok) {
-            setAuth({ isLoggedIn: true, userRole: storedRole, userName: storedUsername });
+            setAuth({ isLoggedIn: true, userRole: storedRole, userName: storedUsername, token: storedToken });
             console.log("Token validated, loaded auth state:", { storedRole, storedUsername });
           } else {
             clearAuthData();
@@ -79,7 +91,7 @@ function App() {
     localStorage.removeItem('userRole');
     localStorage.removeItem('userName');
     localStorage.removeItem('token');
-    setAuth({ isLoggedIn: false, userRole: null, userName: '' });
+    setAuth({ isLoggedIn: false, userRole: null, userName: '', token: '' });
   };
 
   const handleLogin = (token, username, role, is_superuser) => {
@@ -88,6 +100,7 @@ function App() {
       isLoggedIn: true,
       userRole: userRole,
       userName: username,
+      token: token,
     };
     
     localStorage.setItem('isLoggedIn', 'true');
@@ -142,7 +155,7 @@ function App() {
                 isLoggedIn={auth.isLoggedIn} 
                 userRole={auth.userRole}
               >
-                <HomeWrapper userRole={auth.userRole} />
+                <HomeWrapper userRole={auth.userRole} token={auth.token} apiUrl={API_URL} />
               </PrivateRoute>
             } />
             
@@ -151,7 +164,7 @@ function App() {
                 isLoggedIn={auth.isLoggedIn} 
                 userRole={auth.userRole}
               >
-                <SecuritySystem />
+                <SecuritySystemWrapper token={auth.token} apiUrl={API_URL} />
               </PrivateRoute>
             } />
             
@@ -160,7 +173,7 @@ function App() {
               { path: "/security-settings", element: <SecuritySettings /> },
               { path: "/help-support", element: <HelpSupport /> },
               { path: "/system-logs", element: <Systemlog />, requiredRole: "admin" },
-              { path: "/site-data/:clientId", element: <Sdata /> },
+              { path: "/site-data/:clientId", element: <SdataWrapper token={auth.token} apiUrl={API_URL} /> },
             ].map(({ path, element, requiredRole }) => (
               <Route 
                 key={path}
