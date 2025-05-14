@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import OIP from './OIP.jpg';
 
-const API_URL = process.env.REACT_APP_API_URL || "https://Danish1122.pythonanywhere.com/api/login/";
+const API_URL = process.env.REACT_APP_API_URL || "https://Danish1122.pythonanywhere.com/api/";
 
 const LoginPage = ({ onLogin, isLoggedIn }) => {
   const [username, setUsername] = useState('');
@@ -29,7 +29,7 @@ const LoginPage = ({ onLogin, isLoggedIn }) => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/api/login/`, {
+      const response = await fetch(`${API_URL}login/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,16 +37,28 @@ const LoginPage = ({ onLogin, isLoggedIn }) => {
         body: JSON.stringify({ username, password }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Login failed');
+        throw new Error(data.detail || 'Login failed');
       }
 
-      const data = await response.json();
+      // Expected response: { "token": "your-token" }
+      const token = data.token;
+      if (!token) {
+        throw new Error('No token received from server');
+      }
+
+      // Simulate role and user details (adjust based on actual API response)
+      const role = data.role || 'user'; // Default to 'user' if not provided
+      const is_superuser = data.is_superuser || false; // Default to false if not provided
+      const usernameFromResponse = data.username || username; // Use provided username or input
+
       // Call onLogin with token, username, role, and is_superuser
-      onLogin(data.token, data.username, data.role, data.is_superuser);
+      onLogin(token, usernameFromResponse, role, is_superuser);
+
       // Navigate based on role
-      if (data.is_superuser || data.role === 'admin') {
+      if (is_superuser || role === 'admin') {
         navigate('/superuser');
       } else {
         navigate('/home/1');
