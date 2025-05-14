@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import OIP from './OIP.jpg';
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+const API_URL = process.env.REACT_APP_API_URL || "https://Danish1122.pythonanywhere.com/api/login/";
 
 const LoginPage = ({ onLogin, isLoggedIn }) => {
   const [username, setUsername] = useState('');
