@@ -56,36 +56,35 @@ function App() {
   const [isNavOpen, setIsNavOpen] = useState(false);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedUsername = localStorage.getItem('userName');
-    const storedRole = localStorage.getItem('userRole');
+  const storedToken = localStorage.getItem('token');
+  const storedUsername = localStorage.getItem('userName');
+  const storedRole = localStorage.getItem('userRole');
 
-    if (storedToken && storedUsername && storedRole) {
-      fetch(`${API_URL}sensor-status/`, {
-        method: 'POST', // Adjust based on what your endpoint expects
-        headers: {
-          "Authorization": `Token ${storedToken}`,
-          "Content-Type": "application/json",
-        },
-      })
-        .then(response => {
-          if (response.ok) {
-            setAuth({ isLoggedIn: true, userRole: storedRole, userName: storedUsername, token: storedToken });
-            console.log("Token validated, loaded auth state:", { storedRole, storedUsername });
-          } else {
-            clearAuthData();
-            console.log("Token invalid, cleared auth data");
-          }
-        })
-        .catch(() => {
+  if (storedToken && storedUsername && storedRole) {
+    fetch(`${API_URL}sensor-status/`, {
+      method: 'GET', // Changed from POST
+      headers: {
+        "Authorization": `Token ${storedToken}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then(response => {
+        if (response.ok) {
+          setAuth({ isLoggedIn: true, userRole: storedRole, userName: storedUsername, token: storedToken });
+          console.log("Token validated, loaded auth state:", { storedRole, storedUsername });
+        } else {
           clearAuthData();
-          console.log("Token validation failed, cleared auth data");
-        });
-    } else {
-      clearAuthData();
-    }
-  }, []);
-
+          console.log("Token invalid, cleared auth data");
+        }
+      })
+      .catch(() => {
+        clearAuthData();
+        console.log("Token validation failed, cleared auth data");
+      });
+  } else {
+    clearAuthData();
+  }
+}, []);
   const clearAuthData = () => {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('userRole');
