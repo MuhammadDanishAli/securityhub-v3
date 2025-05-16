@@ -1,3 +1,4 @@
+console.log('App API_URL:', API_URL);
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate, useParams } from 'react-router-dom';
 import NavBar from './NavBar';
