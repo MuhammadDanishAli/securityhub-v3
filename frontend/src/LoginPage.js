@@ -1,3 +1,4 @@
+console.log('LoginPage API_URL:', API_URL);
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
