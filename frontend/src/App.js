@@ -55,9 +55,37 @@ function App() {
   const [theme, setTheme] = useState('light');
   const [isNavOpen, setIsNavOpen] = useState(false);
 
-curl -X GET https://Danish1122.pythonanywhere.com/api/sensor-status/ \
--H "Authorization: Token 125d04c20816f2f5a4e7721bd83d6b000322fb35" \
--H "Origin: https://securityhub-v3.vercel.app"
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    const storedUsername = localStorage.getItem('userName');
+    const storedRole = localStorage.getItem('userRole');
+
+    if (storedToken && storedUsername && storedRole) {
+      fetch(`${API_URL}sensor-status/`, {
+        method: 'GET',
+        headers: {
+          "Authorization": `Token ${storedToken}`,
+          "Content-Type": "application/json",
+        },
+      })
+        .then(response => {
+          if (response.ok) {
+            setAuth({ isLoggedIn: true, userRole: storedRole, userName: storedUsername, token: storedToken });
+            console.log("Token validated, loaded auth state:", { storedRole, storedUsername });
+          } else {
+            clearAuthData();
+            console.log("Token invalid, cleared auth data");
+          }
+        })
+        .catch(() => {
+          clearAuthData();
+          console.log("Token validation failed, cleared auth data");
+        });
+    } else {
+      clearAuthData();
+    }
+  }, []);
+
   const clearAuthData = () => {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('userRole');
@@ -113,7 +141,7 @@ curl -X GET https://Danish1122.pythonanywhere.com/api/sensor-status/ \
           theme={theme}
           toggleTheme={toggleTheme}
         />
-        <div className="content-container">
+        <div class="content-container">
           <Routes>
             <Route path="/login" element={
               <LoginPage 
