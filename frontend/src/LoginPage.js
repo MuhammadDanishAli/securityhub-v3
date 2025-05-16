@@ -37,25 +37,29 @@ const LoginPage = ({ onLogin, isLoggedIn }) => {
         body: JSON.stringify({ username, password }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.detail || 'Login failed');
+        const data = await response.json();
+        throw new Error(data.error || 'Login failed');
       }
 
-      // Expected response: { "token": "your-token" }
-      const token = data.token;
-      if (!token) {
-        throw new Error('No token received from server');
+      const data = await response.json();
+      const { token, user_id, username: responseUsername, role, is_superuser } = data;
+
+      if (!token || !user_id) {
+        throw new Error('Invalid response from server: missing token or user ID');
       }
 
-      // Simulate role and user details (adjust based on actual API response)
-      const role = data.role || 'user'; // Default to 'user' if not provided
-      const is_superuser = data.is_superuser || false; // Default to false if not provided
-      const usernameFromResponse = data.username || username; // Use provided username or input
+      // Store user data in localStorage
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify({
+        userId: user_id,
+        username: responseUsername,
+        role: role || 'user',
+        isSuperuser: is_superuser || false,
+      }));
 
-      // Call onLogin with token, username, role, and is_superuser
-      onLogin(token, usernameFromResponse, role, is_superuser);
+      // Call onLogin with the necessary data
+      onLogin(token, responseUsername, role || 'user', is_superuser || false);
 
       // Navigate based on role
       if (is_superuser || role === 'admin') {
