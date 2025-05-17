@@ -1,4 +1,3 @@
-console.log('App API_URL:', API_URL);
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate, useParams } from 'react-router-dom';
 import NavBar from './NavBar';
@@ -11,6 +10,9 @@ import HelpSupport from './HelpSupport';
 import Systemlog from './Systemlog';
 import Sdata from './Sdata';
 import SecuritySystem from './SecuritySystem';
+
+const API_URL = process.env.REACT_APP_API_URL || "https://Danish1122.pythonanywhere.com/api/";
+console.log('App API_URL:', API_URL);
 
 const HomeWrapper = ({ userRole, token, apiUrl }) => {
   const { clientId } = useParams();
@@ -26,8 +28,6 @@ const SdataWrapper = ({ token, apiUrl }) => {
   const { clientId } = useParams();
   return <Sdata clientId={clientId} token={token} apiUrl={apiUrl} />;
 };
-
-const API_URL = process.env.REACT_APP_API_URL || "https://Danish1122.pythonanywhere.com/api/";
 
 const PrivateRoute = ({ children, isLoggedIn, userRole, requiredRole }) => {
   console.log("PrivateRoute:", { isLoggedIn, userRole, requiredRole });
