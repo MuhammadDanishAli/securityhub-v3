@@ -138,7 +138,7 @@ function App() {
           theme={theme}
           toggleTheme={toggleTheme}
         />
-        <div className="content-container">
+        <div class="content-container">
           <Routes>
             <Route path="/login" element={
               <LoginPage 
