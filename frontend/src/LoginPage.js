@@ -13,7 +13,6 @@ const LoginPage = ({ onLogin, isLoggedIn }) => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Redirect if already logged in
   useEffect(() => {
     if (isLoggedIn) {
       navigate('/home/1');
@@ -24,7 +23,6 @@ const LoginPage = ({ onLogin, isLoggedIn }) => {
     e.preventDefault();
     setError('');
 
-    // Basic form validation
     if (!username.trim() || !password.trim()) {
       setError('Please enter both username and password.');
       return;
@@ -33,9 +31,7 @@ const LoginPage = ({ onLogin, isLoggedIn }) => {
     try {
       const response = await fetch(`${API_URL}login/`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ username, password }),
       });
 
@@ -51,7 +47,6 @@ const LoginPage = ({ onLogin, isLoggedIn }) => {
         throw new Error('Invalid response from server: missing token or user ID');
       }
 
-      // Store user data in localStorage
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify({
         userId: user_id,
@@ -60,10 +55,8 @@ const LoginPage = ({ onLogin, isLoggedIn }) => {
         isSuperuser: is_superuser || false,
       }));
 
-      // Call onLogin with the necessary data
       onLogin(token, responseUsername, role || 'user', is_superuser || false);
 
-      // Navigate based on role
       if (is_superuser || role === 'admin') {
         navigate('/superuser');
       } else {
@@ -94,6 +87,7 @@ const LoginPage = ({ onLogin, isLoggedIn }) => {
               placeholder="Enter your username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
               aria-describedby={error ? "username-error" : undefined}
             />
           </div>
@@ -106,6 +100,7 @@ const LoginPage = ({ onLogin, isLoggedIn }) => {
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
               aria-describedby={error ? "password-error" : undefined}
             />
           </div>
