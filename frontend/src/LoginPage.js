@@ -1,11 +1,11 @@
-console.log('LoginPage API_URL:', API_URL);
-console.log('API_URL in use:', process.env.REACT_APP_API_URL || "https://Danish1122.pythonanywhere.com/api/");
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import OIP from './OIP.jpg';
 
 const API_URL = process.env.REACT_APP_API_URL || "https://Danish1122.pythonanywhere.com/api/";
+console.log('LoginPage API_URL:', API_URL);
+console.log('API_URL in use:', process.env.REACT_APP_API_URL || "https://Danish1122.pythonanywhere.com/api/");
 
 const LoginPage = ({ onLogin, isLoggedIn }) => {
   const [username, setUsername] = useState('');
