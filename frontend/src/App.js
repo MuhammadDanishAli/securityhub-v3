@@ -12,7 +12,6 @@ import Sdata from './Sdata';
 import SecuritySystem from './SecuritySystem';
 
 const API_URL = process.env.REACT_APP_API_URL || "https://Danish1122.pythonanywhere.com/api/";
-console.log('App API_URL:', API_URL);
 
 const HomeWrapper = ({ userRole, token, apiUrl }) => {
   const { clientId } = useParams();
@@ -30,13 +29,10 @@ const SdataWrapper = ({ token, apiUrl }) => {
 };
 
 const PrivateRoute = ({ children, isLoggedIn, userRole, requiredRole }) => {
-  console.log("PrivateRoute:", { isLoggedIn, userRole, requiredRole });
   if (!isLoggedIn) {
-    console.log("Redirecting to /login due to not logged in");
     return <Navigate to="/login" replace />;
   }
   if (requiredRole && userRole !== requiredRole) {
-    console.log("Redirecting to /home/1 due to role mismatch");
     return <Navigate to="/home/1" replace />;
   }
   return children;
@@ -68,18 +64,13 @@ function App() {
         .then(response => {
           if (response.ok) {
             setAuth({ isLoggedIn: true, userRole: storedRole, userName: storedUsername, token: storedToken });
-            console.log("Token validated, loaded auth state:", { storedRole, storedUsername });
           } else {
             clearAuthData();
-            console.log("Token invalid, cleared auth data");
           }
         })
         .catch(() => {
           clearAuthData();
-          console.log("Token validation failed, cleared auth data");
         });
-    } else {
-      clearAuthData();
     }
   }, []);
 
@@ -106,7 +97,6 @@ function App() {
     localStorage.setItem('token', token);
     
     setAuth(userData);
-    console.log("Logged in with role:", userRole, "is_superuser:", is_superuser);
   };
 
   const handleLogout = () => {
