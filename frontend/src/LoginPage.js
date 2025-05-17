@@ -4,8 +4,6 @@ import './LoginPage.css';
 import OIP from './OIP.jpg';
 
 const API_URL = process.env.REACT_APP_API_URL || "https://Danish1122.pythonanywhere.com/api/";
-console.log('LoginPage API_URL:', API_URL);
-console.log('API_URL in use:', process.env.REACT_APP_API_URL || "https://Danish1122.pythonanywhere.com/api/");
 
 const LoginPage = ({ onLogin, isLoggedIn }) => {
   const [username, setUsername] = useState('');
@@ -37,7 +35,10 @@ const LoginPage = ({ onLogin, isLoggedIn }) => {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Login failed');
+        if (response.status === 401) {
+          throw new Error('Invalid username or password.');
+        }
+        throw new Error(data.error || 'Login failed. Please try again.');
       }
 
       const data = await response.json();
@@ -47,23 +48,15 @@ const LoginPage = ({ onLogin, isLoggedIn }) => {
         throw new Error('Invalid response from server: missing token or user ID');
       }
 
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify({
-        userId: user_id,
-        username: responseUsername,
-        role: role || 'user',
-        isSuperuser: is_superuser || false,
-      }));
-
       onLogin(token, responseUsername, role || 'user', is_superuser || false);
 
       if (is_superuser || role === 'admin') {
-        navigate('/superuser');
+        navigate('/manage-users'); // Redirect to an existing admin route
       } else {
         navigate('/home/1');
       }
     } catch (err) {
-      setError(err.message || 'An error occurred during login. Please try again.');
+      setError(err.message);
       console.error('Login error:', err);
     }
   };
@@ -76,7 +69,7 @@ const LoginPage = ({ onLogin, isLoggedIn }) => {
       </div>
       <div className="login-card">
         <h2>Sign In</h2>
-        {error && <p className="error-message">{error}</p>}
+        {error && <p className="error-message" id="login-error">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="username">Username</label>
@@ -88,7 +81,7 @@ const LoginPage = ({ onLogin, isLoggedIn }) => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               autoComplete="username"
-              aria-describedby={error ? "username-error" : undefined}
+              aria-describedby={error ? "login-error" : undefined}
             />
           </div>
           <div className="form-group">
@@ -101,14 +94,11 @@ const LoginPage = ({ onLogin, isLoggedIn }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
-              aria-describedby={error ? "password-error" : undefined}
+              aria-describedby={error ? "login-error" : undefined}
             />
           </div>
           <button type="submit" className="login-btn">Login</button>
         </form>
-        <p className="forgot-password">
-          <a href="#forgot">Forgot Password?</a>
-        </p>
       </div>
     </div>
   );
