@@ -12,7 +12,6 @@ import Systemlog from './Systemlog';
 import Sdata from './Sdata';
 import SecuritySystem from './SecuritySystem';
 
-// Home Wrapper Component to use useParams
 const HomeWrapper = ({ userRole, token, apiUrl }) => {
   const { clientId } = useParams();
   return <Home clientId={clientId} userRole={userRole} token={token} apiUrl={apiUrl} />;
@@ -28,10 +27,8 @@ const SdataWrapper = ({ token, apiUrl }) => {
   return <Sdata clientId={clientId} token={token} apiUrl={apiUrl} />;
 };
 
-// Constants
 const API_URL = process.env.REACT_APP_API_URL || "https://Danish1122.pythonanywhere.com/api/";
 
-// PrivateRoute Component
 const PrivateRoute = ({ children, isLoggedIn, userRole, requiredRole }) => {
   console.log("PrivateRoute:", { isLoggedIn, userRole, requiredRole });
   if (!isLoggedIn) {
@@ -45,7 +42,6 @@ const PrivateRoute = ({ children, isLoggedIn, userRole, requiredRole }) => {
   return children;
 };
 
-// Main App Component
 function App() {
   const [auth, setAuth] = useState({
     isLoggedIn: false,
