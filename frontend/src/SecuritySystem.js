@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import './SecuritySystem.css';
-import { Chart, LineController, LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend } from 'chart.js';
+import { Chart, LineController, LineElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend } from 'chart.js';
 
 // Register Chart.js components
-Chart.register(LineController, LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend);
+Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend);
 
 // Constants
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+const API_URL = process.env.REACT_APP_API_URL || "https://Danish1122.pythonanywhere.com/api/";
 
 const clients = [
     {
@@ -47,11 +47,12 @@ const SecuritySystem = () => {
   const [apiError, setApiError] = useState(null);
 
   const chartRefs = useMemo(() => ({
-    pir: { current: null },
-    vibration: { current: null },
-    dhtTemp: { current: null },
-    dhtHumidity: { current: null },
+    pir: React.createRef(),
+    vibration: React.createRef(),
+    dhtTemp: React.createRef(),
+    dhtHumidity: React.createRef(),
   }), []);
+
   const chartInstances = useRef({});
 
   // Find the home corresponding to the siteId
@@ -62,14 +63,19 @@ const SecuritySystem = () => {
   const fetchStatus = useCallback(async () => {
     try {
       const startTime = performance.now();
-      const response = await fetch(`${API_URL}/api/sensor-status/?client_id=${siteId || '1'}`, {
+      const response = await fetch(`${API_URL}sensor-status/?client_id=${siteId || '1'}`, {
         headers: {
           "Authorization": `Token ${localStorage.getItem('token')}`,
           "Content-Type": "application/json",
         },
       });
 
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Unauthorized: Invalid or expired token. Please log in again.");
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       const data = await response.json();
       const endTime = performance.now();
@@ -120,15 +126,21 @@ const SecuritySystem = () => {
       });
     } catch (error) {
       console.error("Error fetching sensor status:", error);
-      setApiError(`Failed to fetch sensor data for Home ${siteId || '1'}. Please ensure the backend server is running.`);
+      setApiError(error.message || `Failed to fetch sensor data for Home ${siteId || '1'}. Please ensure the backend server is running.`);
     }
   }, [siteId]);
 
   useEffect(() => {
     const initCharts = () => {
       Object.entries(chartRefs).forEach(([key, ref]) => {
-        if (ref.current && !chartInstances.current[key]) {
-          chartInstances.current[key] = new Chart(ref.current, {
+        const canvas = ref.current;
+        if (canvas) {
+          // Destroy existing chart if it exists
+          if (chartInstances.current[key]) {
+            chartInstances.current[key].destroy();
+          }
+
+          chartInstances.current[key] = new Chart(canvas, {
             type: 'line',
             data: {
               labels: [],
@@ -144,11 +156,20 @@ const SecuritySystem = () => {
             options: {
               responsive: true,
               scales: {
-                x: { title: { display: true, text: 'Time', color: 'var(--primary-text)' },
-                     ticks: { color: 'var(--primary-text)' } },
-                y: { title: { display: true, text: key.includes('Temp') ? 'Temperature (°C)' : 
-                                            key.includes('Humidity') ? 'Humidity (%)' : 'Value', color: 'var(--primary-text)' },
-                     ticks: { color: 'var(--primary-text)' } },
+                x: { 
+                  type: 'category',
+                  title: { display: true, text: 'Time', color: 'var(--primary-text)' },
+                  ticks: { color: 'var(--primary-text)' },
+                },
+                y: { 
+                  title: { 
+                    display: true, 
+                    text: key.includes('Temp') ? 'Temperature (°C)' : 
+                          key.includes('Humidity') ? 'Humidity (%)' : 'Value', 
+                    color: 'var(--primary-text)' 
+                  },
+                  ticks: { color: 'var(--primary-text)' },
+                },
               },
               plugins: {
                 legend: { labels: { color: 'var(--primary-text)' } }
@@ -166,30 +187,38 @@ const SecuritySystem = () => {
         dhtTemp: { ref: chartRefs.dhtTemp, dataKey: 'temperature', history: sensors.dht.history },
         dhtHumidity: { ref: chartRefs.dhtHumidity, dataKey: 'humidity', history: sensors.dht.history },
       }).forEach(([key, { ref, dataKey, history }]) => {
-        if (chartInstances.current[key] && history) {
-          chartInstances.current[key].data.labels = history.map(h => 
+        const chart = chartInstances.current[key];
+        if (chart && history) {
+          chart.data.labels = history.map(h => 
             new Date(h.timestamp).toLocaleTimeString()
           );
-          chartInstances.current[key].data.datasets[0].data = history.map(h => h[dataKey] ?? 0);
-          chartInstances.current[key].update();
+          chart.data.datasets[0].data = history.map(h => h[dataKey] ?? 0);
+          chart.update();
         }
       });
     };
 
     initCharts();
     const interval = setInterval(updateCharts, 5000);
-    return () => clearInterval(interval);
+
+    // Cleanup on unmount
+    return () => {
+      clearInterval(interval);
+      Object.values(chartInstances.current).forEach(chart => {
+        if (chart) chart.destroy();
+      });
+    };
   }, [sensors, chartRefs]);
 
   useEffect(() => {
     fetchStatus();
     const interval = setInterval(fetchStatus, 5000);
     return () => clearInterval(interval);
-  }, [fetchStatus, siteId]);
+  }, [fetchStatus]);
 
   const handleModeChange = async (newMode) => {
     try {
-      const response = await fetch(`${API_URL}/api/mode/`, {
+      const response = await fetch(`${API_URL}mode/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -198,18 +227,28 @@ const SecuritySystem = () => {
         body: JSON.stringify({ mode: newMode, client_id: siteId || '1' }),
       });
       
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Unauthorized: Invalid or expired token. Please log in again.");
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
-      if (data.status === "success") setMode(newMode);
+      if (data.status === "success") {
+        setMode(newMode);
+        setApiError(null);
+      } else {
+        throw new Error("Failed to update mode.");
+      }
     } catch (error) {
       console.error("Error setting mode:", error);
-      setApiError("Failed to update system mode. Please ensure the backend server is running.");
+      setApiError(error.message || "Failed to update system mode. Please ensure the backend server is running.");
     }
   };
 
   const handleSensorToggle = async (sensor, state) => {
     try {
-      const response = await fetch(`${API_URL}/api/sensor/`, {
+      const response = await fetch(`${API_URL}sensor/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -218,17 +257,25 @@ const SecuritySystem = () => {
         body: JSON.stringify({ sensor_id: sensor, state: state === "on", client_id: siteId || '1' }),
       });
       
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Unauthorized: Invalid or expired token. Please log in again.");
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
       if (data.status === "success") {
         setSensors(prev => ({
           ...prev,
           [sensor]: { ...prev[sensor], enabled: state === "on" },
         }));
+        setApiError(null);
+      } else {
+        throw new Error("Failed to toggle sensor.");
       }
     } catch (error) {
       console.error("Error toggling sensor:", error);
-      setApiError("Failed to toggle sensor. Please ensure the backend server is running.");
+      setApiError(error.message || "Failed to toggle sensor. Please ensure the backend server is running.");
     }
   };
 
@@ -291,11 +338,11 @@ const SecuritySystem = () => {
             
             {sensorKey === 'dht' ? (
               <>
-                <canvas ref={chartRefs.dhtTemp} width="400" height="200"></canvas>
-                <canvas ref={chartRefs.dhtHumidity} width="400" height="200"></canvas>
+                <canvas id={`chart-dht-temp-${siteId}`} ref={chartRefs.dhtTemp} width="400" height="200"></canvas>
+                <canvas id={`chart-dht-humidity-${siteId}`} ref={chartRefs.dhtHumidity} width="400" height="200"></canvas>
               </>
             ) : (
-              <canvas ref={chartRefs[sensorKey]} width="400" height="200"></canvas>
+              <canvas id={`chart-${sensorKey}-${siteId}`} ref={chartRefs[sensorKey]} width="400" height="200"></canvas>
             )}
             
             <button 
